@@ -4,6 +4,7 @@
 ;;
 ;; Author: Tim King <kingtim@gmail.com>
 ;;         Phil Hagelberg <technomancy@gmail.com>
+;;         Robert Ewald <robewald@gmx.net>
 ;; URL: http://www.github.com/kingtim/nrepl.el
 ;; Version: 0.1.8
 ;; Keywords: languages, clojure, nrepl
@@ -2506,6 +2507,25 @@ of the current source file."
          (not (equal str (concat (nrepl-find-ns) "> ")))
          (not (equal str ""))
          (substring-no-properties str))))
+
+(defun nrepl-trace-var (var)
+  "Trace the VAR."
+  (nrepl-send-string
+   (format "(clojure.tools.trace/trace-var* '%s '%s)"
+	   (nrepl-current-ns) var)
+   nil))
+
+(defun nrepl-trace (query)
+  "Make nrepl trace the QUERY."
+  (interactive "P")
+  (nrepl-read-symbol-name "Symbol: " 'nrepl-trace-var query))
+
+(defun nrepl-untrace-all ()
+  "Do not trace any function."
+  (interactive)
+  (nrepl-send-string
+   "(map #(clojure.tools.trace/untrace-ns %) (all-ns))"
+   nil))
 
 ;; this is horrible, but with async callbacks we can't rely on dynamic scope
 (defvar nrepl-ido-ns nil)

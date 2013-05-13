@@ -3,7 +3,8 @@
 ## 0.1.8 (current)
 
 ### New features
-
+* Add functionality to trace a var with `M-x nrepl-trace`. Untracing can
+	be done with `M-x nrepl-untrace-all`.
 ### Bugs fixed
 
 ## 0.1.7 / 2013-03-13
