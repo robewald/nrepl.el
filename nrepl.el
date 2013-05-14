@@ -2527,6 +2527,27 @@ of the current source file."
    "(map #(clojure.tools.trace/untrace-ns %) (all-ns))"
    nil))
 
+(require 'fringe-helper)
+
+(fringe-helper-define 'nrepl-trace-indicator nil
+  "........."
+  "........."
+  ".xxx.xxx."
+  ".xxx.xxx."
+  ".xxx.xxx."
+  ".xxx.xxx."
+  "........."
+  ".........")
+
+(defvar nrepl-trace-indicator nil)
+(make-variable-buffer-local 'nrepl-trace-indicator)
+
+(defun nrepl-place-trace-indicator ()
+  (put 'nrepl-trace-indicator 'overlay-arrow-string "..>")
+  (put 'nrepl-trace-indicator 'overlay-arrow-bitmap 'nrepl-trace-indicator)
+  (put 'nrepl-trace-indicator 'overlay-arrow-position (copy-marker (point-at-bol)))
+  (add-to-list 'overlay-arrow-variable-list 'nrepl-trace-indicator))
+
 ;; this is horrible, but with async callbacks we can't rely on dynamic scope
 (defvar nrepl-ido-ns nil)
 
