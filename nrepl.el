@@ -2508,23 +2508,36 @@ of the current source file."
          (not (equal str ""))
          (substring-no-properties str))))
 
+(defvar nrepl-trace-indicators nil)
+
+(defun nrepl-set-fringe-indicator (var)
+  "Highlights the var as traced in the fringe."
+  (nrepl-jump var)
+  (push (fringe-helper-insert (fringe-lib-load fringe-lib-zig-zag)
+                              (point-at-bol))
+        nrepl-trace-indicators))
+
 (defun nrepl-trace-var (var)
   "Trace the VAR."
   (nrepl-send-string
    (format "(clojure.tools.trace/trace-var* '%s '%s)"
-	   (nrepl-current-ns) var)
-   nil))
+           (nrepl-current-ns) var)
+   nil)
+  (nrepl-set-fringe-indicator var))
 
 (defun nrepl-trace (query)
   "Make nrepl trace the QUERY."
   (interactive "P")
-  (nrepl-read-symbol-name "Symbol: " 'nrepl-trace-var query))
+  (save-excursion
+    (nrepl-read-symbol-name "Symbol: " 'nrepl-trace-var query)))
 
 (defun nrepl-untrace-all ()
   "Do not trace any function."
   (interactive)
+  (while nrepl-trace-indicators
+    (fringe-helper-remove (pop nrepl-trace-indicators)))
   (nrepl-send-string
-   "(map #(clojure.tools.trace/untrace-ns %) (all-ns))"
+   "(doall (map #(clojure.tools.trace/untrace-ns %) (all-ns)))"
    nil))
 
 (require 'fringe-helper)
